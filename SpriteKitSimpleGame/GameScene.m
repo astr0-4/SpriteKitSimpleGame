@@ -14,6 +14,9 @@
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
 @end
 
+static const uint32_t projectileCategory = 0x1 << 0;
+static const uint32_t monsterCategory = 0x1 << 1;
+
 static inline CGPoint rwAdd(CGPoint a, CGPoint b) {
     return CGPointMake(a.x + b.x, a.y + b.y);
 }
@@ -42,6 +45,8 @@ static inline CGPoint rwNormalize(CGPoint a) {
     if(self = [super initWithSize:size]) {
         //2
         NSLog(@"Size: %@", NSStringFromCGSize(size));
+        self.physicsWorld.gravity = CGVectorMake(0, 0);
+        self.physicsWorld.contactDelegate = self;
         
         //3
         self.backgroundColor = [SKColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
@@ -57,6 +62,12 @@ static inline CGPoint rwNormalize(CGPoint a) {
 -(void)addMonster {
     //Create Sprite
     SKSpriteNode *monster = [SKSpriteNode spriteNodeWithImageNamed: @"monster"];
+    monster.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:monster.size];
+    monster.physicsBody.dynamic = YES;
+    monster.physicsBody.categoryBitMask = monsterCategory;
+    monster.physicsBody.contactTestBitMask = projectileCategory;
+    monster.physicsBody.collisionBitMask = 0;
+    
     
     //Determine where to spawn the monster along the Y axis
     int minY = monster.size.height/2;
@@ -112,6 +123,13 @@ static inline CGPoint rwNormalize(CGPoint a) {
     // 2 set up initial location of projectile
     SKSpriteNode *projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
     projectile.position = self.player.position;
+    projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
+    projectile.physicsBody.dynamic = YES;
+    projectile.physicsBody.categoryBitMask = projectileCategory;
+    projectile.physicsBody.contactTestBitMask = monsterCategory;
+    projectile.physicsBody.collisionBitMask = 0;
+    projectile.physicsBody.usesPreciseCollisionDetection = YES;
+    
     
     // 3 determine offset of location of projectile
     CGPoint offset = rwSub(location, projectile.position);
@@ -137,44 +155,30 @@ static inline CGPoint rwNormalize(CGPoint a) {
     SKAction *actionMove = [SKAction moveTo:realDest duration:realMoveDuration];
     SKAction *actionMoveDone = [SKAction removeFromParent];
     [projectile runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
-    
-    
+}
+-(void)projectile:(SKSpriteNode *)projectile didCollideWithMonster:(SKSpriteNode *)monster {
+    NSLog(@"Hit!");
+    [projectile removeFromParent];
+    [monster removeFromParent];
 }
 
-//-(void)didMoveToView:(SKView *)view {
-//    /* Setup your scene here */
-//    SKLabelNode *myLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
-//    
-//    myLabel.text = @"Hello, World!";
-//    myLabel.fontSize = 65;
-//    myLabel.position = CGPointMake(CGRectGetMidX(self.frame),
-//                                   CGRectGetMidY(self.frame));
-//    
-//    [self addChild:myLabel];
-//}
-//
-//-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//    /* Called when a touch begins */
-//    
-//    for (UITouch *touch in touches) {
-//        CGPoint location = [touch locationInNode:self];
-//        
-//        SKSpriteNode *sprite = [SKSpriteNode spriteNodeWithImageNamed:@"Spaceship"];
-//        
-//        sprite.xScale = 0.5;
-//        sprite.yScale = 0.5;
-//        sprite.position = location;
-//        
-//        SKAction *action = [SKAction rotateByAngle:M_PI duration:1];
-//        
-//        [sprite runAction:[SKAction repeatActionForever:action]];
-//        
-//        [self addChild:sprite];
-//    }
-//}
-//
-//-(void)update:(CFTimeInterval)currentTime {
-//    /* Called before each frame is rendered */
-//}
-
+-(void)didBeginContact:(SKPhysicsContact *)contact {
+    SKPhysicsBody *firstBody, *secondBody;
+    if(contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask)
+    {
+        firstBody = contact.bodyA;
+        secondBody = contact.bodyB;
+    }
+    else {
+        firstBody = contact.bodyB;
+        secondBody = contact.bodyA;
+    }
+    
+    if((firstBody.categoryBitMask & projectileCategory) != 0 &&
+       (secondBody.categoryBitMask & monsterCategory) !=0)
+    {
+        [self projectile:(SKSpriteNode *)firstBody.node didCollideWithMonster:(SKSpriteNode *)secondBody.node];
+    }
+    
+}
 @end
