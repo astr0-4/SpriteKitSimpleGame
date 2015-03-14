@@ -9,6 +9,13 @@
 #import "GameViewController.h"
 #import "GameScene.h"
 
+@import AVFoundation;
+
+@interface GameViewController()
+@property (nonatomic) AVAudioPlayer *backgroundMusicPlayer;
+@end
+
+
 @implementation SKScene (Unarchive)
 
 + (instancetype)unarchiveFromFile:(NSString *)file {
@@ -30,23 +37,33 @@
 
 @implementation GameViewController
 
-- (void)viewDidLoad
+- (void)viewWillLayoutSubviews
 {
-    [super viewDidLoad];
+    [super viewWillLayoutSubviews];
+    
+    //add in background music
+    NSError *error;
+    NSURL *backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"background-music-aac" withExtension:@"caf"];
+    self.backgroundMusicPlayer  =
+    [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&error];
+    [self.backgroundMusicPlayer prepareToPlay];
+    [self.backgroundMusicPlayer play];
 
     // Configure the view.
     SKView * skView = (SKView *)self.view;
+    if (!skView.scene) {
     skView.showsFPS = YES;
     skView.showsNodeCount = YES;
     /* Sprite Kit applies additional optimizations to improve rendering performance */
     skView.ignoresSiblingOrder = YES;
     
     // Create and configure the scene.
-    GameScene *scene = [GameScene sceneWithSize: skView.bounds.size];
+    SKScene *scene = [GameScene sceneWithSize: skView.bounds.size];
     scene.scaleMode = SKSceneScaleModeAspectFill;
     
     // Present the scene.
     [skView presentScene:scene];
+    }
 }
 
 - (BOOL)shouldAutorotate
