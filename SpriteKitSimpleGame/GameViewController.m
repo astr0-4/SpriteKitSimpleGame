@@ -43,7 +43,7 @@
     
     //add in background music
     NSError *error;
-    NSURL *backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"background-music-aac" withExtension:@"caf"];
+    NSURL *backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"rac_song" withExtension:@"wav"];
     self.backgroundMusicPlayer  =
     [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&error];
     [self.backgroundMusicPlayer prepareToPlay];
