@@ -82,7 +82,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
     
     // determine speed of monster
     int minDuration = 1.0;
-    int maxDuration = 2.0;
+    int maxDuration = 11.0;
     int rangeDuration = maxDuration - minDuration;
     int actualDuration = (arc4random() % rangeDuration) + minDuration;
     
