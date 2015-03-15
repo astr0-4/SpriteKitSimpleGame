@@ -116,6 +116,8 @@ static inline CGPoint rwNormalize(CGPoint a) {
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    
+    [self runAction:[SKAction playSoundFileNamed:@"Arcade_S-wwwbeat-8526_hifi.mp3" waitForCompletion:NO]];
     // 1 choose one of your touches to work with
     UITouch *touch = [touches anyObject];
     CGPoint location = [touch locationInNode:self];

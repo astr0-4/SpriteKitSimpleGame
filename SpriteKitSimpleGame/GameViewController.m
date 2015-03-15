@@ -42,12 +42,12 @@
     [super viewWillLayoutSubviews];
     
     //add in background music
-    NSError *error;
-    NSURL *backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"rac_song" withExtension:@"wav"];
-    self.backgroundMusicPlayer  =
-    [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&error];
-    [self.backgroundMusicPlayer prepareToPlay];
-    [self.backgroundMusicPlayer play];
+//    NSError *error;
+//    NSURL *backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"rac_song" withExtension:@"wav"];
+//    self.backgroundMusicPlayer  =
+//    [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&error];
+//    [self.backgroundMusicPlayer prepareToPlay];
+//    [self.backgroundMusicPlayer play];
 
     // Configure the view.
     SKView * skView = (SKView *)self.view;
